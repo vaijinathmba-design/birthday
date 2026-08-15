@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>A Little Universe Made Just For XYZ ✨ | Happy Birthday!</title>
+  <meta name="description" content="A magical, interactive digital birthday universe made just for XYZ. Explore memories, games, friend messages, and surprises." />
+  
+  <!-- Google Fonts: Display + Sans + Handwriting -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="universe-locked">
+
+  <!-- ================================================================= -->
+  <!-- CANVAS PARTICLES & CURSOR                                         -->
+  <!-- ================================================================= -->
+  <canvas id="ambientCanvas" aria-hidden="true"></canvas>
+  <canvas id="fxCanvas" aria-hidden="true"></canvas>
+
+  <div id="customCursor" class="custom-cursor" aria-hidden="true">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+  </div>
+
+  <!-- Audio elements & Synth Controller HUD -->
+  <header class="floating-hud" id="floatingHud">
+    <div class="hud-left">
+      <div class="chapter-badge" id="chapterBadge">
+        <span class="chapter-num" id="hudChapterNum">00</span>
+        <span class="chapter-divider">/</span>
+        <span class="chapter-total">10</span>
+        <span class="chapter-name" id="hudChapterName">The Entrance</span>
+      </div>
+    </div>
+    <div class="hud-right">
+      <button class="hud-btn" id="soundFxBtn" title="Toggle Sound Effects" aria-label="Toggle Sound Effects">
+        <span class="hud-icon">🔊</span>
+        <span class="hud-text">SFX: ON</span>
+      </button>
+      <button class="hud-btn music-btn" id="musicToggleBtn" title="Play Dreamy Birthday Lo-Fi Music" aria-label="Toggle Background Music">
+        <span class="hud-icon music-disc">♫</span>
+        <span class="hud-text" id="musicBtnLabel">LO-FI: PLAY</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Side Navigation Rail (Desktop) -->
+  <nav class="desktop-nav-rail" id="desktopNavRail" aria-label="Chapter Navigation">
+    <div class="rail-progress-bar" id="railProgressBar"></div>
+    <button class="rail-dot active" data-target="heroSection" title="The Birthday Universe" aria-label="Chapter 0: Universe"></button>
+    <button class="rail-dot" data-target="chapterRoom" title="Chapter 01: The Birthday Room" aria-label="Chapter 1: Birthday Room"></button>
+    <button class="rail-dot" data-target="chapterMuseum" title="Chapter 02: Memory Museum" aria-label="Chapter 2: Memory Museum"></button>
+    <button class="rail-dot" data-target="chapterTimeline" title="Chapter 03: Photo Timeline" aria-label="Chapter 3: Timeline"></button>
+    <button class="rail-dot" data-target="chapterFriends" title="Chapter 04: Friend Wall" aria-label="Chapter 4: Friend Wall"></button>
+    <button class="rail-dot" data-target="chapterPersonality" title="Chapter 05: Personality Machine" aria-label="Chapter 5: Personality Machine"></button>
+    <button class="rail-dot" data-target="chapterQuiz" title="Chapter 06: How Well Do You Know Yourself?" aria-label="Chapter 6: Quiz"></button>
+    <button class="rail-dot" data-target="chapterConstellation" title="Chapter 07: Stars of Love" aria-label="Chapter 7: Constellation"></button>
+    <button class="rail-dot" data-target="chapterTinyThings" title="Chapter 08: Tiny Things About You" aria-label="Chapter 8: Tiny Things"></button>
+    <button class="rail-dot" data-target="chapterFunStation" title="Chapter 09: Fun Station & Gifts" aria-label="Chapter 9: Fun Station"></button>
+    <button class="rail-dot" data-target="chapterGrandFinale" title="Chapter 10: The Grand Finale" aria-label="Chapter 10: Grand Finale"></button>
+  </nav>
+
+  <!-- ================================================================= -->
+  <!-- 0. THE MYSTERIOUS ENTRANCE (ENVELOPE SCREEN)                      -->
+  <!-- ================================================================= -->
+  <section class="entrance-screen" id="entranceScreen" aria-label="Opening Experience">
+    <div class="entrance-decorations">
+      <div class="floating-cloud cloud-1">☁️</div>
+      <div class="floating-cloud cloud-2">☁️</div>
+      <div class="floating-sparkle sp-1">✨</div>
+      <div class="floating-sparkle sp-2">⭐</div>
+      <div class="floating-sparkle sp-3">🌸</div>
+      <div class="floating-sparkle sp-4">💗</div>
+    </div>
+
+    <div class="entrance-card-wrapper">
+      <div class="mystery-teaser">
+        <p class="teaser-sub">A personal invitation from your favorite humans</p>
+        <h1 class="teaser-title">Hey <span class="highlight-name" id="entranceRecipientName">XYZ</span>…</h1>
+        <p class="teaser-body">Someone left a whole universe here just for you. ✨</p>
+      </div>
+
+      <div class="physical-envelope" id="physicalEnvelope">
+        <div class="envelope-back"></div>
+        <div class="envelope-letter" id="envelopeLetter">
+          <div class="letter-stamp">💌</div>
+          <p class="letter-preview-heading">Happy Birthday!</p>
+          <p class="letter-preview-text">Ready to step into your little world?</p>
+          <span class="letter-heart">♡</span>
+        </div>
+        <div class="envelope-pocket"></div>
+        <div class="envelope-flap" id="envelopeFlap">
+          <div class="wax-seal" id="waxSeal">
+            <span class="wax-monogram" id="waxMonogram">✨</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="paper-btn open-surprise-btn" id="openSurpriseBtn">
+        <span class="paper-btn-text">OPEN YOUR SURPRISE</span>
+        <span class="paper-btn-arrow">→</span>
+      </button>
+      <p class="entrance-footnote">Best experienced with headphones on 🎧</p>
+    </div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- MAIN BIRTHDAY UNIVERSE (REVEALED AFTER ENVELOPE)                   -->
+  <!-- ================================================================= -->
+  <main class="universe-container" id="universeContainer">
+
+    <!-- HERO SECTION: THE BIRTHDAY UNIVERSE -->
+    <section class="hero-universe chapter-section" id="heroSection" data-chapter="00" data-chapter-title="The Birthday Universe">
+      <div class="hero-aura-glow"></div>
+      
+      <!-- Interactive Floating Universe Elements -->
+      <div class="hero-floating-decor">
+        <div class="universe-item float-balloon" id="heroBalloon" title="Floating Birthday Balloon">🎈</div>
+        <div class="universe-item float-cake" title="Birthday Cake">🎂</div>
+        <div class="universe-item float-gift" title="Mystery Gift">🎁</div>
+        <div class="universe-item float-butterfly" id="easterButterfly" title="Click me 3 times for magic! ✨">🦋</div>
+        <div class="universe-item float-flower" title="Soft Flower">🌸</div>
+        <div class="universe-item float-star star-1">⭐</div>
+        <div class="universe-item float-star star-2">✨</div>
+        <div class="universe-item float-heart heart-1">💗</div>
+        <div class="universe-item float-heart heart-2">♡</div>
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-tag-pill">
+          <span class="tag-sparkle">✨</span>
+          <span>A LITTLE UNIVERSE MADE JUST FOR YOU</span>
+          <span class="tag-sparkle">✨</span>
+        </div>
+
+        <div class="hero-typography">
+          <h2 class="hero-heading-top">
+            <span class="letter-pop">H</span><span class="letter-pop">A</span><span class="letter-pop">P</span><span class="letter-pop">P</span><span class="letter-pop">Y</span>
+            <span class="word-gap"></span>
+            <span class="letter-pop">B</span><span class="letter-pop">I</span><span class="letter-pop">R</span><span class="letter-pop">T</span><span class="letter-pop">H</span><span class="letter-pop">D</span><span class="letter-pop">A</span><span class="letter-pop">Y</span>
+          </h2>
+          <h1 class="hero-name-giant" id="heroMainName">XYZ ✨</h1>
+        </div>
+
+        <!-- Scrapbook Frame Hero Photo -->
+        <div class="scrapbook-hero-frame-container">
+          <div class="scrapbook-hero-frame" id="heroPhotoCard">
+            <div class="washi-tape tape-top-left"></div>
+            <div class="washi-tape tape-top-right"></div>
+            <div class="gold-pushpin">📍</div>
+            
+            <div class="hero-photo-wrapper">
+              <img src="photos/hero.jpg" alt="Photo of XYZ" class="hero-img" id="heroImageElement" onerror="this.onerror=null; this.src=createSampleImage('hero');" />
+              <div class="photo-overlay-shine"></div>
+            </div>
+
+            <div class="scrapbook-hero-caption">
+              <span class="handwritten-arrow-text">yes, this is the main character 💅</span>
+              <div class="doodle-arrow">➔</div>
+            </div>
+            <div class="hero-frame-tag">👑 100% ICONIC</div>
+          </div>
+        </div>
+
+        <div class="hero-explore-prompt">
+          <p class="explore-teaser">There is more. Obviously. 👀</p>
+          <button class="pill-action-btn scroll-down-btn" id="startExploringBtn">
+            <span>START EXPLORING</span>
+            <span class="bounce-down">↓</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- CHAPTER 01: THE BIRTHDAY ROOM                                   -->
+    <!-- =============================================================== -->
+    <section class="chapter-section chapter-room" id="chapterRoom" data-chapter="01" data-chapter-title="The Birthday Room">
+      <div class="section-header">
+        <span class="chapter-label">CHAPTER 01</span>
+        <h2 class="section-title">The Birthday Room 🎈</h2>
+        <p class="section-subtitle">A cozy room packed with little secrets. Click around to interact with everything!</p>
+      </div>
+
+      <div class="birthday-room-canvas-wrapper">
+        <div class="room-isometric-stage">
+          <!-- Room Background Walls & Floor -->
+          <div class="room-wall-left"></div>
+          <div class="room-wall-right"></div>
+          <div class="room-floor"></div>
+          
+          <!-- Hanging Fairy Lights -->
+          <div class="room-fairy-lights" id="fairyLightsInteractive" title="Click to change light modes!">
+            <div class="light-bulb lb-1 active"></div>
+            <div class="light-bulb lb-2 active"></div>
+            <div class="light-bulb lb-3 active"></div>
+            <div class="light-bulb lb-4 active"></div>
+            <div class="light-bulb lb-5 active"></div>
+            <div class="light-bulb lb-6 active"></div>
+            <div class="light-bulb lb-7 active"></div>
+            <div class="light-bulb lb-8 active"></div>
+          </div>
+
+          <!-- Hanging Bunting Banner -->
+          <div class="room-bunting">
+            <span class="flag f-1">H</span>
+            <span class="flag f-2">B</span>
+            <span class="flag f-3">D</span>
+            <span class="flag f-4">★</span>
+            <span class="flag f-5">X</span>
+            <span class="flag f-6">Y</span>
+            <span class="flag f-7">Z</span>
+          </div>
+
+          <!-- Interactive Room Objects -->
+          <!-- 1. Interactive Birthday Cake -->
+          <div class="room-interactive-item item-cake" id="roomCake" title="Click the cake!">
+            <div class="interactive-hint-pulse">Click me! 🎂</div>
+            <div class="cake-illustration">
+              <div class="cake-candles-row">
+                <div class="room-candle c-1 lit"><span class="flame">🔥</span></div>
+                <div class="room-candle c-2 lit"><span class="flame">🔥</span></div>
+                <div class="room-candle c-3 lit"><span class="flame">🔥</span></div>
+              </div>
+              <div class="cake-top-tier"></div>
+              <div class="cake-bottom-tier"></div>
+              <div class="cake-plate"></div>
+            </div>
+            <span class="item-tag">Birthday Cake</span>
+          </div>
+
+          <!-- 2. Interactive Present Box -->
+          <div class="room-interactive-item item-gift" id="roomGift" title="Click to open present!">
+            <div class="interactive-hint-pulse">Open present! 🎁</div>
+            <div class="room-gift-box">
+              <div class="room-gift-lid"></div>
+              <div class="room-gift-body"></div>
+              <div class="room-gift-ribbon">🎀</div>
+            </div>
+            <span class="item-tag">Mystery Gift</span>
+          </div>
+
+          <!-- 3. Interactive Wall Photo Frame -->
+          <div class="room-interactive-item item-photo-frame" id="roomFrame" title="Click to inspect photo!">
+            <div class="wall-frame-outer">
+              <div class="wall-frame-inner">
+                <img src="photos/photo1.jpg" alt="Memory Snapshot" class="room-wall-img" onerror="this.onerror=null; this.src=createSampleImage('photo1');" />
+              </div>
+            </div>
+            <span class="item-tag">Framed Memory 📸</span>
+          </div>
+
+          <!-- 4. Interactive Floating Balloons -->
+          <div class="room-interactive-item item-balloons" id="roomBalloons" title="Click to release balloons!">
+            <div class="balloon-bundle">
+              <div class="bundle-balloon b-pink">💗</div>
+              <div class="bundle-balloon b-blue">🎈</div>
+              <div class="bundle-balloon b-gold">⭐</div>
+              <div class="balloon-strings"></div>
+            </div>
+            <span class="item-tag">Balloons</span>
+          </div>
+
+          <!-- 5. Interactive Flower Vase -->
+          <div class="room-interactive-item item-flower" id="roomFlower" title="Click to water the flowers!">
+            <div class="flower-vase">
+              <div class="blooming-flowers">🌸 🌷 🌼</div>
+              <div class="vase-body">🏺</div>
+            </div>
+            <span class="item-tag">Compliment Bloom 🌸</span>
+          </div>
+
+          <!-- 6. Interactive Vinyl Record Player -->
+          <div class="room-interactive-item item-gramophone" id="roomGramophone" title="Click to spin birthday tunes!">
+            <div class="gramophone-box">
+              <div class="spinning-disc" id="roomRecordDisc">💿</div>
+              <div class="gramophone-horn">🎺</div>
+            </div>
+            <span class="item-tag">Lo-Fi Player ♫</span>
+          </div>
+        </div>
+
+        <div class="room-activity-log" id="roomActivityLog">
+          <span class="log-icon">✨</span>
+          <span class="log-text" id="roomLogText">Tap any object in the room to discover its secret!</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- CHAPTER 02: THE MEMORY MUSEUM                                   -->
+    <!-- =============================================================== -->
+    <section class="chapter-section chapter-museum" id="chapterMuseum" data-chapter="02" data-chapter-title="The Memory Museum">
+      <div class="section-header">
+        <span class="chapter-label">CHAPTER 02</span>
+        <h2 class="section-title">The Memory Museum 📸</h2>
+        <p class="section-subtitle">Polaroids, tickets, inside jokes, and frozen moments. Click any memory to open its story.</p>
+      </div>
+
+      <div class="museum-scrapbook-canvas" id="memoryMuseumGrid">
+        <!-- Injected via JavaScript from birthdayData.photos -->
+      </div>
+
+      <div class="museum-easter-tip">
+        <span>💡 Hint: Double-clicking any memory creates an explosion of love!</span>
+      </div>
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- CHAPTER 03: THE PHOTO TIMELINE                                  -->
+    <!-- =============================================================== -->
+    <section class="chapter-section chapter-timeline" id="chapterTimeline" data-chapter="03" data-chapter-title="Photo Timeline">
+      <div class="section-header">
+        <span class="chapter-label">CHAPTER 03</span>
+        <h2 class="section-title">THEN → THEN → NOW ⏳</h2>
+        <p class="section-subtitle">Drag horizontally through the years and watch the main character evolution.</p>
+      </div>
+
+      <div class="timeline-slider-container" id="timelineSliderContainer">
+        <div class="timeline-slider-track" id="timelineTrack">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <div class="timeline-controls-bar">
+        <button class="timeline-arrow-btn" id="timelinePrevBtn" aria-label="Previous Memory">←</button>
+        <span class="timeline-drag-hint">↔ Drag or swipe to travel in time</span>
+        <button class="timeline-arrow-btn" id="timelineNextBtn" aria-label="Next Memory">→</button>
+      </div>
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- CHAPTER 04: THE PEOPLE WHO KNOW YOU BEST (FRIEND WALL)          -->
+    <!-- =============================================================== -->
+    <section class="chapter-section chapter-friends" id="chapterFriends" data-chapter="04" data-chapter-title="Friend Message Wall">
+      <div class="section-header">
+        <span class="chapter-label">CHAPTER 04</span>
+        <h2 class="section-title">The People Who Know You Best 💌</h2>
+        <p class="section-subtitle">Little notes, letters, and chaotic confessions pinned on your personal wall. Drag them around & react!</p>
+      </div>
+
+      <div class="friend-corkboard-wall" id="friendCorkboard">
+        <!-- Injected via JS from birthdayData.friends -->
+      </div>
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- CHAPTER 05: THE XYZ PERSONALITY MACHINE                         -->
+    <!-- =============================================================== -->
+    <section class="chapter-section chapter-personality" id="chapterPersonality" data-chapter="05" data-chapter-title="The Personality Machine">
+      <div class="section-header">
+        <span class="chapter-label">CHAPTER 05</span>
+        <h2 class="section-title">The XYZ Personality Machine 🧪</h2>
+        <p class="section-subtitle">Let’s scientifically determine what kind of human being you truly are today.</p>
+      </div>
+
+      <div class="personality-machine-container">
+        <!-- Quiz Stage -->
+        <div class="quiz-card-box" id="personalityQuizBox">
+          <div class="quiz-progress-line">
+            <div class="quiz-progress-fill" id="personalityProgressFill" style="width: 15%;"></div>
+          </div>
+          <div class="quiz-step-counter" id="personalityStepCounter">Question 1 of 6</div>
+
+          <div class="quiz-question-wrapper" id="personalityQuestionWrapper">
+            <h3 class="quiz-question-title" id="personalityQuestionTitle">Your ideal chaotic weekend looks like...</h3>
+            <div class="quiz-options-list" id="personalityOptionsList">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Card (Hidden until finished) -->
+        <div class="personality-result-card hidden" id="personalityResultCard">
+          <div class="result-badge-top">✨ SCIENTIFIC DIAGNOSIS COMPLETE ✨</div>
+          <h3 class="result-headline" id="personalityHeadline">87% MAIN CHARACTER 👑</h3>
+          <p class="result-tagline" id="personalityTagline">With 94% Human Sunshine and 0% ability to reply to texts on time.</p>
+          
+          <div class="result-stats-breakdown" id="personalityStatsBreakdown">
+            <!-- Trait progress bars injected by JS -->
+          </div>
+
+          <div class="result-actions">
+            <button class="pill-action-btn" id="retakePersonalityBtn">Retake Test ↺</button>
+            <button class="pill-action-btn secondary" id="copyPersonalityBtn">Copy My Diagnosis 📋</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- CHAPTER 06: HOW WELL DO YOU KNOW YOURSELF? (QUIZ)               -->
+    <!-- =============================================================== -->
+    <section class="chapter-section chapter-quiz" id="chapterQuiz" data-chapter="06" data-chapter-title="How Well Do You Know Yourself?">
+      <div class="section-header">
+        <span class="chapter-label">CHAPTER 06</span>
+        <h2 class="section-title">How Well Do You Know Yourself? 🧐</h2>
+        <p class="section-subtitle">Answer these 5 ultra-specific questions to prove you're actually XYZ.</p>
+      </div>
+
+      <div class="trivia-quiz-container" id="triviaQuizContainer">
+        <div class="trivia-progress-bar">
+          <div class="trivia-fill" id="triviaProgressFill"></div>
+        </div>
+        <div class="trivia-card" id="triviaCard">
+          <span class="trivia-index" id="triviaIndex">1 / 5</span>
+          <h3 class="trivia-prompt" id="triviaPrompt">Loading question...</h3>
+          <div class="trivia-choices" id="triviaChoices">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Trivia Score Modal / Card -->
+        <div class="trivia-score-card hidden" id="triviaScoreCard">
+          <div class="score-trophy">🏆</div>
+          <h3 class="score-title" id="scoreTitle">SCORE: 5/5</h3>
+          <p class="score-verdict" id="scoreVerdict">"Okay… you know yourself suspiciously well. 🕵️‍♀️✨"</p>
+          <button class="pill-action-btn" id="retryTriviaBtn">Try Again ↻</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- CHAPTER 07: THINGS WE LOVE ABOUT YOU (CONSTELLATION)            -->
+    <!-- =============================================================== -->
+    <section class="chapter-section chapter-constellation" id="chapterConstellation" data-chapter="07" data-chapter-title="Things We Love About You">
+      <div class="section-header">
+        <span class="chapter-label">CHAPTER 07</span>
+        <h2 class="section-title">Things We Love About You ✨</h2>
+        <p class="section-subtitle">Touch each glowing star in the night sky to reveal one of your superpowers.</p>
+      </div>
+
+      <div class="constellation-sky-container" id="constellationSky">
+        <svg class="constellation-lines-svg" id="constellationSvg"></svg>
+        <div class="constellation-stars-layer" id="constellationStarsLayer">
+          <!-- Injected via JS -->
+        </div>
+
+        <div class="constellation-card-modal hidden" id="constellationCardModal">
+          <button class="constellation-close-btn" id="constellationCloseBtn" aria-label="Close Star Note">✕</button>
+          <div class="star-card-glow"></div>
+          <div class="star-card-icon" id="starCardIcon">✨</div>
+          <h3 class="star-card-title" id="starCardTitle">Kindness</h3>
+          <p class="star-card-body" id="starCardBody">You have a rare way of making everyone around you feel valued and safe.</p>
+          <span class="star-card-index" id="starCardIndex">Star 1 of 10</span>
+        </div>
+      </div>
+
+      <div class="constellation-counter-bar">
+        <span class="constellation-progress-text" id="constellationProgressText">Stars Discovered: 0 / 10 ✨</span>
+        <button class="small-pill-btn" id="revealAllStarsBtn">Light Up All Stars 🌟</button>
+      </div>
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- CHAPTER 08: TINY THINGS ABOUT XYZ (SCRAPBOOK NOTES)             -->
+    <!-- =============================================================== -->
+    <section class="chapter-section chapter-tiny-things" id="chapterTinyThings" data-chapter="08" data-chapter-title="Tiny Things About You">
+      <div class="section-header">
+        <span class="chapter-label">CHAPTER 08</span>
+        <h2 class="section-title">Tiny Things About You 📝</h2>
+        <p class="section-subtitle">The little quirks, habits, and superpowers that make you uniquely you.</p>
+      </div>
+
+      <div class="tiny-things-grid" id="tinyThingsGrid">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- CHAPTER 09: THE INTERACTIVE FUN STATION                         -->
+    <!-- =============================================================== -->
+    <section class="chapter-section chapter-fun-station" id="chapterFunStation" data-chapter="09" data-chapter-title="Fun Station & Gifts">
+      <div class="section-header">
+        <span class="chapter-label">CHAPTER 09</span>
+        <h2 class="section-title">The Birthday Fun Station 🎡</h2>
+        <p class="section-subtitle">Reasons to celebrate, a magical fortune machine, choose-your-gift boxes, and a hidden secret drawer...</p>
+      </div>
+
+      <!-- Part A: Reasons to Celebrate Counter -->
+      <div class="fun-module reasons-module">
+        <div class="module-badge">01. REASONS TO CELEBRATE</div>
+        <div class="reasons-card" id="reasonsCard">
+          <div class="reason-big-counter" id="reasonCounterNum">01</div>
+          <div class="reason-text-content">
+            <h3 class="reason-headline" id="reasonHeadline">Because you make people laugh effortlessly</h3>
+            <p class="reason-detail" id="reasonDetail">Even on the most chaotic days, your humor turns stressful moments into core memories.</p>
+          </div>
+          <div class="reason-nav-buttons">
+            <button class="paper-btn small" id="prevReasonBtn">← PREV</button>
+            <button class="paper-btn" id="nextReasonBtn">NEXT REASON →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Part B: Birthday Wish / Fate Generator -->
+      <div class="fun-module fate-module">
+        <div class="module-badge">02. BIRTHDAY FATE GENERATOR</div>
+        <div class="fate-card-container">
+          <div class="fortune-tarot-card" id="fortuneTarotCard">
+            <div class="tarot-inner">
+              <div class="tarot-front">
+                <span class="tarot-icon">🔮</span>
+                <p class="tarot-prompt">Tap below to consult the cosmic birthday oracle...</p>
+              </div>
+              <div class="tarot-back" id="tarotBack">
+                <span class="tarot-fate-icon" id="fateIcon">🍕</span>
+                <h4 class="tarot-fate-title" id="fateTitle">THE FOOD ORACLE</h4>
+                <p class="tarot-fate-text" id="fateText">"You will receive an unreasonable amount of delicious treats today, and zero calories will count."</p>
+              </div>
+            </div>
+          </div>
+          <button class="paper-btn fate-btn" id="generateFateBtn">
+            <span>GENERATE YOUR BIRTHDAY FATE ✨</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Part C: Choose Your Gift -->
+      <div class="fun-module gifts-module">
+        <div class="module-badge">03. CHOOSE YOUR GIFT BOX 🎁</div>
+        <p class="module-desc">Pick any gift box below to unwrap a personalized surprise!</p>
+        <div class="gift-boxes-row" id="giftBoxesRow">
+          <!-- 4 Gift Boxes generated by JS -->
+        </div>
+      </div>
+
+      <!-- Part D: The Secret Drawer Easter Egg (Discreet Lock) -->
+      <div class="secret-drawer-easter-egg" id="secretDrawerTrigger" title="Psst... what's this?">
+        <div class="secret-lock-glow"></div>
+        <div class="secret-key-icon">🔐</div>
+        <span class="secret-hint-text">Psst... don't touch this 🤫</span>
+      </div>
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- CHAPTER 10: THE GRAND FINALE                                    -->
+    <!-- =============================================================== -->
+    <section class="chapter-section chapter-grand-finale" id="chapterGrandFinale" data-chapter="10" data-chapter-title="The Grand Finale">
+      
+      <!-- Stage 1: Build-up Silence -->
+      <div class="finale-buildup" id="finaleBuildup">
+        <p class="buildup-quote">“Okay… one last thing.”</p>
+        <p class="buildup-sub">You've explored all the corners of your universe.</p>
+        <button class="pill-action-btn grand-step-btn" id="finaleStepBtn">Step Into The Spotlight ✨</button>
+      </div>
+
+      <!-- Stage 2: Birthday Cake & Make A Wish -->
+      <div class="finale-cake-stage hidden" id="finaleCakeStage">
+        <div class="spotlight-beam"></div>
+        <div class="finale-title-banner">
+          <span class="finale-hbd-tag">🎉 IT'S TIME FOR THE MAIN EVENT 🎉</span>
+          <h2 class="finale-name-banner">HAPPY BIRTHDAY, <span id="finaleNameSpan">XYZ</span>! 🎂💗</h2>
+        </div>
+
+        <div class="giant-3d-cake-wrapper">
+          <div class="giant-cake" id="giantCake">
+            <div class="giant-candles-row">
+              <div class="giant-candle g-c1 lit"><span class="giant-flame">🔥</span></div>
+              <div class="giant-candle g-c2 lit"><span class="giant-flame">🔥</span></div>
+              <div class="giant-candle g-c3 lit"><span class="giant-flame">🔥</span></div>
+              <div class="giant-candle g-c4 lit"><span class="giant-flame">🔥</span></div>
+              <div class="giant-candle g-c5 lit"><span class="giant-flame">🔥</span></div>
+            </div>
+            <div class="cake-tier tier-3">🍓 🌸 🍓 🌸 🍓</div>
+            <div class="cake-tier tier-2">✨ HAPPY BIRTHDAY ✨</div>
+            <div class="cake-tier tier-1">💖 🎂 💖 🎂 💖</div>
+            <div class="cake-pedestal"></div>
+          </div>
+        </div>
+
+        <div class="wish-button-container">
+          <p class="wish-instruction">Close your eyes, make your deepest wish for this year, then press:</p>
+          <button class="make-wish-btn" id="makeWishBtn">
+            <span class="wish-btn-sparkle">✨</span>
+            <span class="wish-btn-text">BLOW CANDLES & MAKE A WISH 🎂</span>
+            <span class="wish-btn-sparkle">✨</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stage 3: The Celebration Explosion Card & Heartfelt Letter -->
+      <div class="finale-celebration-card hidden" id="finaleCelebrationCard">
+        <div class="card-gold-border">
+          <div class="celebration-toast">🥂✨ TO ANOTHER AMAZING YEAR OF YOU ✨🥂</div>
+          <h3 class="letter-salutation">Dear <span id="finalLetterName">XYZ</span>,</h3>
+          <div class="letter-paragraph-body" id="finalLetterBody">
+            <p>I hope this year gives you more reasons to laugh till your stomach hurts, more memories to hold onto forever, more wild adventures to tell stories about, and a whole lot more moments that make you feel genuinely, deeply happy.</p>
+            <p>You make the world brighter, warmer, and so much more fun just by existing in it. Never forget how loved and cherished you are.</p>
+          </div>
+          <div class="letter-signoff">
+            <p class="signoff-with-love">With all the love in the universe,</p>
+            <p class="signoff-names">Your Favorite People 💖</p>
+          </div>
+        </div>
+
+        <!-- Animated Photo Heart Collage Morph -->
+        <div class="finale-heart-collage-section">
+          <h4 class="collage-title">Some memories are worth keeping forever 📸✨</h4>
+          <div class="heart-collage-grid" id="heartCollageGrid">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="finale-bottom-actions">
+          <button class="pill-action-btn replay-btn" id="replayExperienceBtn">
+            <span>REPLAY THE EXPERIENCE ↻</span>
+          </button>
+          <button class="pill-action-btn share-btn" id="shareUniverseBtn">
+            <span>SHARE THIS UNIVERSE ✨</span>
+          </button>
+        </div>
+        
+        <!-- Discreet Easter Egg Button -->
+        <div class="tiny-easter-egg-zone">
+          <button class="secret-dont-click-btn" id="dontClickBtn">⚠️ Definitely don't click this.</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================================================================= -->
+  <!-- MODALS (MEMORY POPUP, GIFT REVEAL, SECRET DRAWER)                 -->
+  <!-- ================================================================= -->
+  
+  <!-- Memory Museum Modal -->
+  <div class="universe-modal hidden" id="memoryModal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" id="memoryModalBackdrop"></div>
+    <div class="modal-card polaroid-modal-card">
+      <button class="modal-close-btn" id="memoryModalClose" aria-label="Close memory modal">✕</button>
+      <div class="modal-polaroid-frame">
+        <div class="modal-washi-tape"></div>
+        <div class="modal-img-wrapper">
+          <img src="" alt="Memory preview" class="modal-img" id="modalMemoryImg" />
+        </div>
+        <div class="modal-details">
+          <div class="modal-meta-row">
+            <span class="modal-date-badge" id="modalMemoryDate">📅 Summer 2024</span>
+            <span class="modal-location-badge" id="modalMemoryLocation">📍 Favorite Café</span>
+          </div>
+          <h3 class="modal-memory-title" id="modalMemoryTitle">That Unforgettable Day</h3>
+          <p class="modal-memory-desc" id="modalMemoryDesc">We laughed for 3 hours straight and completely lost track of time.</p>
+          <div class="modal-friend-comment" id="modalFriendComment">
+            <span class="comment-avatar">💬</span>
+            <p class="comment-text">"Core memory unlocked forever 😂"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Room Gift / Surprise Note Modal -->
+  <div class="universe-modal hidden" id="surpriseNoteModal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" id="surpriseNoteBackdrop"></div>
+    <div class="modal-card note-modal-card">
+      <button class="modal-close-btn" id="surpriseNoteClose" aria-label="Close note">✕</button>
+      <div class="note-paper-texture">
+        <div class="note-stamp">✨</div>
+        <h3 class="note-heading" id="noteHeading">A Tiny Secret!</h3>
+        <p class="note-body" id="noteBody">You are genuinely one of a kind.</p>
+        <button class="paper-btn small" id="noteDismissBtn">Aww, thank you! 💗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Friend Message Detail Modal -->
+  <div class="universe-modal hidden" id="friendMessageModal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" id="friendModalBackdrop"></div>
+    <div class="modal-card friend-letter-card">
+      <button class="modal-close-btn" id="friendModalClose" aria-label="Close friend message">✕</button>
+      <div class="friend-modal-content">
+        <div class="friend-header">
+          <div class="friend-avatar-circle" id="friendAvatarEmoji">🌸</div>
+          <div class="friend-info">
+            <h3 class="friend-name-display" id="friendNameDisplay">XYZ's Friend 01</h3>
+            <span class="friend-role-badge">Certified Bestie</span>
+          </div>
+        </div>
+        <div class="friend-message-body" id="friendMessageBody">
+          "Happy Birthday! You make every single room 10x brighter when you walk in."
+        </div>
+        <div class="friend-reaction-bar">
+          <span class="react-label">Leave a reaction:</span>
+          <div class="reaction-buttons">
+            <button class="reaction-btn" data-emoji="❤️">❤️ <span class="react-count">12</span></button>
+            <button class="reaction-btn" data-emoji="✨">✨ <span class="react-count">8</span></button>
+            <button class="reaction-btn" data-emoji="😂">😂 <span class="react-count">15</span></button>
+            <button class="reaction-btn" data-emoji="🥹">🥹 <span class="react-count">9</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The Secret Drawer Emotional Modal -->
+  <div class="universe-modal hidden" id="secretDrawerModal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" id="secretDrawerBackdrop"></div>
+    <div class="modal-card secret-drawer-letter-card">
+      <button class="modal-close-btn" id="secretDrawerClose" aria-label="Close secret letter">✕</button>
+      <div class="secret-letter-inner">
+        <div class="secret-lock-header">
+          <span class="secret-unlocked-icon">🗝️</span>
+          <span class="secret-unlocked-tag">THE SECRET DRAWER • UNLOCKED</span>
+        </div>
+        <h3 class="secret-letter-title">Okay, jokes aside…</h3>
+        <div class="secret-letter-paragraphs" id="secretLetterContent">
+          <p>We tease you, make memes about your quirks, and pretend we're just here for the birthday cake... but in all seriousness, having you in our lives is one of the greatest blessings.</p>
+          <p>Your empathy, your stubborn loyalty to the people you love, your electric energy, and the quiet comfort you bring when someone is having a bad day are things that cannot be replaced.</p>
+          <p>Never change. The world is so lucky to have you. 💖</p>
+        </div>
+        <div class="secret-letter-footer">
+          <span class="secret-wax-stamp">💌</span>
+          <span class="secret-author-tag">Written with love</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Alert -->
+  <div class="universe-toast hidden" id="universeToast" role="status" aria-live="polite">
+    <span class="toast-icon">✨</span>
+    <span class="toast-msg" id="toastMsg">Link copied to clipboard!</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
